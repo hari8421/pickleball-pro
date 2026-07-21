@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, ShieldCheck } from 'lucide-react';
 import type { Player } from '../../types';
 import Avatar from '../common/Avatar';
 import { formatWinRate } from '../../lib/formatters';
@@ -41,9 +41,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, rank, onClick }) => {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-slate-800 dark:text-slate-100 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-          {player.displayName}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-slate-800 dark:text-slate-100 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+            {player.displayName}
+          </p>
+          {player.isAdmin && (
+            <ShieldCheck className="w-4 h-4 text-brand-600 dark:text-brand-400 flex-shrink-0" title="Admin player" />
+          )}
+        </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">
           {player.gamesPlayed} games
         </p>

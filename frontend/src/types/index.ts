@@ -6,6 +6,15 @@ export interface Player {
   rankScore: number;
   gamesPlayed: number;
   winRate: number; // 0.0 – 1.0
+  isAdmin?: boolean;
+  createdAt: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  displayName: string;
+  playingLevel: 'beginner' | 'intermediate' | 'advanced';
   createdAt: string;
 }
 

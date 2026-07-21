@@ -39,6 +39,8 @@ if (process.env.NODE_ENV !== 'test') {
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // ── API routes ────────────────────────────────────────────────────────────────
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/players', require('./routes/playerRoutes'));
 app.use('/api/games', require('./routes/gameRoutes'));
 app.use('/api/friends', require('./routes/friendRoutes'));

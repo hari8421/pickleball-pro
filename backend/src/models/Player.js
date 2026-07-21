@@ -8,6 +8,7 @@ const PlayerSchema = new mongoose.Schema(
     rankScore: { type: Number, default: 1500 },
     gamesPlayed: { type: Number, default: 0 },
     winRate: { type: Number, default: 0.5 },
+    isAdmin: { type: Boolean, default: false },
   },
   {
     timestamps: true,       // adds createdAt + updatedAt automatically

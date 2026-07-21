@@ -30,10 +30,15 @@ const createPlayerValidators = [
     .isFloat({ min: 0, max: 1 })
     .withMessage('winRate must be a number between 0 and 1'),
 
-  body('gamesPlayed')
+   body('gamesPlayed')
     .optional()
     .isInt({ min: 0 })
     .withMessage('gamesPlayed must be an integer >= 0'),
+
+  body('isAdmin')
+    .optional()
+    .isBoolean()
+    .withMessage('isAdmin must be a boolean'),
 ];
 
 /**
@@ -63,6 +68,11 @@ const updatePlayerValidators = [
     .optional()
     .isInt({ min: 0 })
     .withMessage('gamesPlayed must be an integer >= 0'),
+
+  body('isAdmin')
+    .optional()
+    .isBoolean()
+    .withMessage('isAdmin must be a boolean'),
 ];
 
 module.exports = { createPlayerValidators, updatePlayerValidators };

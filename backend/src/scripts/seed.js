@@ -6,7 +6,7 @@ const Game = require('../models/Game');
 // ── Seed data ──────────────────────────────────────────────────────────────────
 
 const seedPlayers = [
-  { uid: 'player_001', displayName: 'Alex Rivera',    rankScore: 1850, winRate: 0.75, gamesPlayed: 48 },
+  { uid: 'player_001', displayName: 'Alex Rivera',    rankScore: 1850, winRate: 0.75, gamesPlayed: 48, isAdmin: true },
   { uid: 'player_002', displayName: 'Jordan Chen',    rankScore: 1790, winRate: 0.70, gamesPlayed: 43 },
   { uid: 'player_003', displayName: 'Morgan Patel',   rankScore: 1740, winRate: 0.66, gamesPlayed: 39 },
   { uid: 'player_004', displayName: 'Taylor Brooks',  rankScore: 1700, winRate: 0.62, gamesPlayed: 45 },

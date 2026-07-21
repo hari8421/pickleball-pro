@@ -11,9 +11,14 @@ import NotFound from '../features/not-found/NotFound';
 const DashboardPage = lazy(() => import('../features/dashboard/DashboardPage'));
 const LeaderboardPage = lazy(() => import('../features/leaderboard/LeaderboardPage'));
 const PlayerProfilePage = lazy(() => import('../features/profile/PlayerProfilePage'));
+const EditProfilePage = lazy(() => import('../features/profile/EditProfilePage'));
 const GamesPage = lazy(() => import('../features/games/GamesPage'));
 const FriendsPage = lazy(() => import('../features/friends/FriendsPage'));
 const AddGamePage = lazy(() => import('../features/add-game/AddGamePage'));
+const AdminPlayersPage = lazy(() => import('../features/admin/AdminPlayersPage'));
+const LoginPage = lazy(() => import('../features/login/LoginPage'));
+const RegisterPage = lazy(() => import('../features/login/RegisterPage'));
+const UsersPage = lazy(() => import('../features/users/UsersPage'));
 
 const LoadingFallback = () => (
   <div className="p-6 space-y-4">
@@ -36,6 +41,14 @@ const Layout: React.FC = () => (
 );
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
   {
     path: '/',
     element: <Layout />,
@@ -65,6 +78,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'profile/me',
+        element: (
+          <PageTransition>
+            <EditProfilePage />
+          </PageTransition>
+        ),
+      },
+      {
         path: 'games',
         element: (
           <PageTransition>
@@ -85,6 +106,22 @@ export const router = createBrowserRouter([
         element: (
           <PageTransition>
             <AddGamePage />
+          </PageTransition>
+        ),
+      },
+      {
+        path: 'users',
+        element: (
+          <PageTransition>
+            <UsersPage />
+          </PageTransition>
+        ),
+      },
+      {
+        path: 'admin/players',
+        element: (
+          <PageTransition>
+            <AdminPlayersPage />
           </PageTransition>
         ),
       },
