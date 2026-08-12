@@ -1,11 +1,12 @@
 import React, { Suspense, lazy } from 'react';
-import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Outlet, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/layout/PageTransition';
 import NavBar from '../components/layout/NavBar';
 import BottomTabBar from '../components/layout/BottomTabBar';
 import SkeletonLoader from '../components/common/SkeletonLoader';
 import NotFound from '../features/not-found/NotFound';
+import { useSessionStore } from '../store/sessionStore';
 
 // Lazy-loaded screens
 const DashboardPage = lazy(() => import('../features/dashboard/DashboardPage'));
@@ -26,6 +27,13 @@ const LoadingFallback = () => (
   </div>
 );
 
+/** Redirects unauthenticated users to /login */
+const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = useSessionStore((s) => s.token);
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
 const Layout: React.FC = () => (
   <div className="min-h-screen flex flex-col">
     <NavBar />
@@ -43,15 +51,27 @@ const Layout: React.FC = () => (
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <LoginPage />
+      </Suspense>
+    ),
   },
   {
     path: '/register',
-    element: <RegisterPage />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <RegisterPage />
+      </Suspense>
+    ),
   },
   {
     path: '/',
-    element: <Layout />,
+    element: (
+      <RequireAuth>
+        <Layout />
+      </RequireAuth>
+    ),
     children: [
       {
         index: true,

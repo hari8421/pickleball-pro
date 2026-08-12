@@ -31,28 +31,38 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests }) => {
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">wants to be friends</p>
             </div>
-            <div className="flex gap-2 flex-shrink-0">
-              <button
-                onClick={() => {
-                  acceptRequest(req.id);
-                  addToast('Friend request accepted!', 'success');
-                }}
-                aria-label={`Accept friend request from ${req.senderUID}`}
-                className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors"
-              >
-                <Check className="w-4 h-4" aria-hidden="true" />
-              </button>
-              <button
-                onClick={() => {
-                  rejectRequest(req.id);
-                  addToast('Request removed', 'info');
-                }}
-                aria-label={`Reject friend request from ${req.senderUID}`}
-                className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
-              >
-                <X className="w-4 h-4" aria-hidden="true" />
-              </button>
-            </div>
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={async () => {
+                    try {
+                      await acceptRequest(req.id);
+                      addToast('Friend request accepted!', 'success');
+                    } catch (err) {
+                      const message = err instanceof Error ? err.message : 'Failed to accept request';
+                      addToast(message, 'error');
+                    }
+                  }}
+                  aria-label={`Accept friend request from ${req.senderUID}`}
+                  className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors"
+                >
+                  <Check className="w-4 h-4" aria-hidden="true" />
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await rejectRequest(req.id);
+                      addToast('Request removed', 'info');
+                    } catch (err) {
+                      const message = err instanceof Error ? err.message : 'Failed to remove request';
+                      addToast(message, 'error');
+                    }
+                  }}
+                  aria-label={`Reject friend request from ${req.senderUID}`}
+                  className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
+                >
+                  <X className="w-4 h-4" aria-hidden="true" />
+                </button>
+              </div>
           </div>
         ))}
       </div>

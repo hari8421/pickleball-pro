@@ -22,7 +22,7 @@ const BottomTabBar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    addToast({ id: Date.now().toString(), message: 'Logged out successfully', type: 'success' });
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 

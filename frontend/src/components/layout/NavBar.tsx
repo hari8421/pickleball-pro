@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Trophy, Gamepad2, Users, PlusCircle, Pickaxe, ShieldCheck, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, Trophy, Gamepad2, Users, PlusCircle, Pickaxe, ShieldCheck, LogOut } from 'lucide-react';
 import ThemeToggle from '../common/ThemeToggle';
 import { useSessionStore } from '../../store/sessionStore';
 import { useToastStore } from '../../store/toastStore';
@@ -14,7 +14,7 @@ const NavBar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    addToast({ id: Date.now().toString(), message: 'Logged out successfully', type: 'success' });
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 

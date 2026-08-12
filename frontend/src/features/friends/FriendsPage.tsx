@@ -10,15 +10,27 @@ import EmptyState from '../../components/common/EmptyState';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import PendingRequests from './PendingRequests';
 import SendRequestForm from './SendRequestForm';
+import { useEffect } from 'react';
 
 const FriendsPage: React.FC = () => {
   const currentUID = useSessionStore((s) => s.currentUID);
   const requests = useFriendsStore((s) => s.requests);
+  const loadRequests = useFriendsStore((s) => s.loadRequests);
 
   const { data: players = [], isLoading } = useQuery({
     queryKey: QUERY_KEYS.players,
     queryFn: getPlayers,
   });
+
+  // Load friend requests for the current user from the backend when mounted
+  useEffect(() => {
+    if (currentUID) {
+      loadRequests(currentUID).catch((err) => {
+        // ignore here; UI components show toasts on actions
+        console.error('Failed to load friend requests', err);
+      });
+    }
+  }, [currentUID, loadRequests]);
 
   const acceptedFriends = requests.filter(
     (r) =>

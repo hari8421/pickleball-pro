@@ -46,7 +46,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, rank, onClick }) => {
             {player.displayName}
           </p>
           {player.isAdmin && (
-            <ShieldCheck className="w-4 h-4 text-brand-600 dark:text-brand-400 flex-shrink-0" title="Admin player" />
+            <ShieldCheck className="w-4 h-4 text-brand-600 dark:text-brand-400 flex-shrink-0" aria-label="Admin player" />
           )}
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">

@@ -15,7 +15,7 @@ const SendRequestForm: React.FC<SendRequestFormProps> = ({ players, currentUID }
   const { requests, sendRequest } = useFriendsStore();
   const addToast = useToastStore((s) => s.addToast);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -45,9 +45,15 @@ const SendRequestForm: React.FC<SendRequestFormProps> = ({ players, currentUID }
       return;
     }
 
-    sendRequest(currentUID, trimmed);
-    addToast('Friend request sent!', 'success');
-    setInputUID('');
+    try {
+      await sendRequest(currentUID, trimmed);
+      addToast('Friend request sent!', 'success');
+      setInputUID('');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to send friend request';
+      setError(message);
+      addToast(message, 'error');
+    }
   };
 
   return (

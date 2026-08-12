@@ -1,23 +1,23 @@
 import type { Player } from '../types';
 import { useSessionStore } from '../store/sessionStore';
 
-function getAuthHeader() {
+function getAuthHeader(): Record<string, string> {
   const token = useSessionStore.getState().token;
   if (token) {
     return { Authorization: `Bearer ${token}` };
   }
-  return {};
+  return {} as Record<string, string>;
 }
 
 export async function getPlayers(): Promise<Player[]> {
-  const res = await fetch('/api/players');
+  const res = await fetch('/api/players', { headers: { ...getAuthHeader() } });
   if (!res.ok) throw new Error(`Failed to fetch players: ${res.statusText}`);
   const data = await res.json();
   return data.data;
 }
 
 export async function getPlayerByUID(uid: string): Promise<Player> {
-  const res = await fetch(`/api/players/${uid}`);
+  const res = await fetch(`/api/players/${uid}`, { headers: { ...getAuthHeader() } });
   if (!res.ok) throw new Error(`Failed to fetch player: ${res.statusText}`);
   return res.json();
 }

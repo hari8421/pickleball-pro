@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UserPlus, AlertCircle, Loader } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { registerUser, loginUser } from '../../api/users';
 import { useSessionStore } from '../../store/sessionStore';
 import { useToastStore } from '../../store/toastStore';
@@ -32,13 +33,13 @@ const RegisterPage: React.FC = () => {
       const token = data.token;
       login(token, false, username, displayName, username);
 
-      addToast({ id: Date.now().toString(), message: 'Registration successful', type: 'success' });
+      addToast('Registration successful', 'success');
       // Redirect to home
       window.location.href = '/';
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Registration failed';
       setError(message);
-      addToast({ id: Date.now().toString(), message, type: 'error' });
+      addToast(message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -91,6 +92,13 @@ const RegisterPage: React.FC = () => {
             </button>
           </div>
         </form>
+
+        <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">
+          Already have an account?{' '}
+          <Link to="/login" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

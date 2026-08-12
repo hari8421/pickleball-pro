@@ -1,5 +1,4 @@
-import type { Player } from '../types';
-import type { User } from '../types';
+// ...existing code...
 
 export async function registerUser(payload: { username: string; password: string; displayName: string; playingLevel?: string }) {
   const res = await fetch('/api/users/register', {
@@ -44,10 +43,10 @@ export async function getUserByUsername(username: string) {
   return res.json();
 }
 
-function getAuthHeader() {
+function getAuthHeader(): Record<string, string> {
   const token = (globalThis as any).localStorage?.getItem('token');
   if (token) return { Authorization: `Bearer ${token}` };
-  return {};
+  return {} as Record<string, string>;
 }
 
 export async function getCurrentUser() {

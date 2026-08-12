@@ -32,51 +32,35 @@ const AdminPlayersPage: React.FC = () => {
       const data = await getPlayers();
       setPlayers(data);
     } catch (err) {
-      addToast({
-        id: Date.now().toString(),
-        message: 'Failed to load players',
-        type: 'error',
-      });
+      addToast('Failed to load players', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreate = async (formData: Omit<Player, '_id' | 'createdAt'>) => {
+  const handleCreate = async (formData: Omit<Player, '_id' | 'createdAt'> | Partial<Omit<Player, '_id' | 'createdAt'>>) => {
     try {
-      await createPlayer(formData, currentUID);
-      addToast({
-        id: Date.now().toString(),
-        message: 'Player created successfully',
-        type: 'success',
-      });
+      // Ensure this is a full create payload (uid is required when creating)
+      if (!('uid' in formData) || !formData.uid) {
+        throw new Error('Missing UID for new player');
+      }
+      await createPlayer(formData as Omit<Player, '_id' | 'createdAt'>, currentUID);
+      addToast('Player created successfully', 'success');
       setShowForm(false);
       await fetchPlayers();
     } catch (err) {
-      addToast({
-        id: Date.now().toString(),
-        message: err instanceof Error ? err.message : 'Failed to create player',
-        type: 'error',
-      });
+      addToast(err instanceof Error ? err.message : 'Failed to create player', 'error');
     }
   };
 
   const handleUpdate = async (player: Player, formData: Partial<Omit<Player, '_id' | 'createdAt'>>) => {
     try {
       await updatePlayer(player.uid, formData, currentUID);
-      addToast({
-        id: Date.now().toString(),
-        message: 'Player updated successfully',
-        type: 'success',
-      });
+      addToast('Player updated successfully', 'success');
       setEditingPlayer(null);
       await fetchPlayers();
     } catch (err) {
-      addToast({
-        id: Date.now().toString(),
-        message: err instanceof Error ? err.message : 'Failed to update player',
-        type: 'error',
-      });
+      addToast(err instanceof Error ? err.message : 'Failed to update player', 'error');
     }
   };
 
@@ -87,28 +71,16 @@ const AdminPlayersPage: React.FC = () => {
 
     try {
       await deletePlayer(uid, currentUID);
-      addToast({
-        id: Date.now().toString(),
-        message: 'Player deleted successfully',
-        type: 'success',
-      });
+      addToast('Player deleted successfully', 'success');
       await fetchPlayers();
     } catch (err) {
-      addToast({
-        id: Date.now().toString(),
-        message: err instanceof Error ? err.message : 'Failed to delete player',
-        type: 'error',
-      });
+      addToast(err instanceof Error ? err.message : 'Failed to delete player', 'error');
     }
   };
 
   const handleLogout = () => {
     logout();
-    addToast({
-      id: Date.now().toString(),
-      message: 'Logged out successfully',
-      type: 'success',
-    });
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 

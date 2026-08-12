@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useToastStore } from '../../store/toastStore';
 import { getCurrentUser, updateCurrentUser } from '../../api/users';
-import { useSessionStore } from '../../store/sessionStore';
 
 const EditProfilePage: React.FC = () => {
   const { addToast } = useToastStore();
-  const { currentUID } = useSessionStore();
   const [displayName, setDisplayName] = useState('');
   const [playingLevel, setPlayingLevel] = useState<'beginner'|'intermediate'|'advanced'>('intermediate');
   const [loading, setLoading] = useState(true);
@@ -22,7 +20,7 @@ const EditProfilePage: React.FC = () => {
       setDisplayName(data.displayName || '');
       setPlayingLevel(data.playingLevel || 'intermediate');
     } catch (err) {
-      addToast({ id: Date.now().toString(), message: 'Failed to load profile', type: 'error' });
+      addToast('Failed to load profile', 'error');
     } finally {
       setLoading(false);
     }
@@ -32,11 +30,11 @@ const EditProfilePage: React.FC = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const updated = await updateCurrentUser({ displayName, playingLevel });
-      addToast({ id: Date.now().toString(), message: 'Profile updated', type: 'success' });
+      await updateCurrentUser({ displayName, playingLevel });
+      addToast('Profile updated', 'success');
       // Optionally update session store currentUID if username changed - username isn't editable
     } catch (err) {
-      addToast({ id: Date.now().toString(), message: err instanceof Error ? err.message : 'Failed to update profile', type: 'error' });
+      addToast(err instanceof Error ? err.message : 'Failed to update profile', 'error');
     } finally {
       setSaving(false);
     }

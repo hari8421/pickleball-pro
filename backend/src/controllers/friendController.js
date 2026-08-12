@@ -1,6 +1,18 @@
 const FriendRequest = require('../models/FriendRequest');
 
 /**
+ * Normalize Mongoose document to API response (convert _id to id)
+ */
+function normalizeFriendRequest(doc) {
+  if (!doc) return null;
+  const obj = doc.toObject ? doc.toObject() : doc;
+  return {
+    ...obj,
+    id: obj._id,
+  };
+}
+
+/**
  * GET /api/friends
  * Query param: uid — returns all requests where senderUID or receiverUID equals uid.
  */
@@ -11,7 +23,7 @@ async function getFriendRequests(req, res, next) {
       : {};
 
     const requests = await FriendRequest.find(filter).sort({ createdAt: -1 });
-    res.json(requests);
+    res.json(requests.map(normalizeFriendRequest));
   } catch (err) {
     next(err);
   }
@@ -42,7 +54,7 @@ async function createFriendRequest(req, res, next) {
 
     const request = new FriendRequest({ senderUID, receiverUID });
     const saved = await request.save();
-    res.status(201).json(saved);
+    res.status(201).json(normalizeFriendRequest(saved));
   } catch (err) {
     next(err);
   }
@@ -67,7 +79,7 @@ async function updateFriendRequest(req, res, next) {
       return next(err);
     }
 
-    res.json(request);
+    res.json(normalizeFriendRequest(request));
   } catch (err) {
     next(err);
   }

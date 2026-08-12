@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LogIn, AlertCircle, Loader } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useSessionStore } from '../../store/sessionStore';
 import { useToastStore } from '../../store/toastStore';
 import { loginWithCredentials } from '../../api/auth';
@@ -32,21 +33,13 @@ const LoginPage: React.FC = () => {
       // mark session as admin
       // for admin, display "Admin" or their username as displayName
       login(token, true, '', 'Admin', username);
-      addToast({
-        id: Date.now().toString(),
-        message: `Welcome, ${username}!`,
-        type: 'success',
-      });
+      addToast(`Welcome, ${username}!`, 'success');
       // Redirect will be handled by the app routing
       window.location.href = '/admin/players';
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
-      addToast({
-        id: Date.now().toString(),
-        message,
-        type: 'error',
-      });
+      addToast(message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -142,6 +135,12 @@ const LoginPage: React.FC = () => {
         {/* Footer */}
         <p className="text-center text-xs text-slate-600 dark:text-slate-400 mt-6">
           JWT-based authentication for secure admin access
+        </p>
+        <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-3">
+          Not an admin?{' '}
+          <Link to="/register" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">
+            Register as a player
+          </Link>
         </p>
       </div>
     </div>

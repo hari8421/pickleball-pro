@@ -1,22 +1,48 @@
 import { useEffect } from 'react';
 import { useSessionStore } from '../store/sessionStore';
 import { verifyToken } from '../api/auth';
+import { getCurrentUser } from '../api/users';
 
 export function useAuth() {
-  const { token, setIsAdmin, isAdmin } = useSessionStore();
+  const { token, setIsAdmin, login, isAdmin } = useSessionStore();
 
   useEffect(() => {
-    if (token && !isAdmin) {
-      // Verify token validity
-      verifyToken(token).then(() => {
-        setIsAdmin(true);
-      }).catch(() => {
-        // Token is invalid or expired
-        useSessionStore.getState().logout();
-      });
-    }
-  }, [token, isAdmin, setIsAdmin]);
+    let mounted = true;
 
-  return { isAuthenticated: !!token && isAdmin, token, isAdmin };
+    async function verify() {
+      if (!token) return;
+
+      // First try admin verify (admin tokens go to /api/auth/verify)
+      try {
+        const data = await verifyToken(token);
+        if (!mounted) return;
+        setIsAdmin(true);
+        // Set session as admin (displayName set to Admin)
+        login(token, true, '', 'Admin', data.username || 'admin');
+        return;
+      } catch (err) {
+        // Not an admin token or invalid. Try user verification via /api/users/me
+      }
+
+      try {
+        const user = await getCurrentUser();
+        if (!mounted) return;
+        setIsAdmin(false);
+        // login(token, isAdmin=false, currentUID=username, displayName, username)
+        login(token, false, user.username, user.displayName, user.username);
+      } catch (err) {
+        // Token invalid for both admin and user -> logout
+        useSessionStore.getState().logout();
+      }
+    }
+
+    verify();
+
+    return () => {
+      mounted = false;
+    };
+  }, [token, setIsAdmin, login]);
+
+  return { isAuthenticated: !!token, token, isAdmin };
 }
 
