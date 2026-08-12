@@ -27,5 +27,9 @@ export function validateAddGameForm(
     errors.location = 'Location is required.';
   }
 
+  if (Boolean(fields.homeTeamId) !== Boolean(fields.awayTeamId)) {
+    errors.teams = 'Select both a home team and an away team, or leave both blank.';
+  }
+
   return errors;
 }

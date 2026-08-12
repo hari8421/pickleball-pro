@@ -44,6 +44,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/players', require('./routes/playerRoutes'));
 app.use('/api/games', require('./routes/gameRoutes'));
 app.use('/api/friends', require('./routes/friendRoutes'));
+app.use('/api/teams', require('./routes/teamRoutes'));
 
 // ── 404 + central error handler (must be last) ────────────────────────────────
 app.use(require('./middleware/notFound'));

@@ -75,7 +75,8 @@ const loginValidators = [
     .exists({ checkFalsy: true })
     .withMessage('username is required')
     .isString()
-    .trim(),
+    .trim()
+    .toLowerCase(),
   body('password')
     .exists({ checkFalsy: true })
     .withMessage('password is required')

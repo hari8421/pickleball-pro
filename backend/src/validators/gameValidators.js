@@ -27,6 +27,16 @@ const createGameValidators = [
     .isFloat()
     .withMessage('each coordinate must be a number'),
 
+  body('homeTeamId')
+    .optional()
+    .isMongoId()
+    .withMessage('homeTeamId must be a valid MongoDB ObjectId'),
+
+  body('awayTeamId')
+    .optional()
+    .isMongoId()
+    .withMessage('awayTeamId must be a valid MongoDB ObjectId'),
+
   body('score.homeTeam')
     .exists({ checkNull: true })
     .withMessage('score.homeTeam is required')

@@ -23,6 +23,7 @@ const NavBar: React.FC = () => {
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy, exact: false },
     { to: '/games', label: 'Games', icon: Gamepad2, exact: false },
     { to: '/users', label: 'Players', icon: Users, exact: false },
+    { to: '/teams', label: 'Teams', icon: Users, exact: false },
     { to: '/friends', label: 'Friends', icon: Users, exact: false },
     { to: '/add-game', label: 'Add Game', icon: PlusCircle, exact: false },
     ...(isAdmin ? [{ to: '/admin/players', label: 'Admin', icon: ShieldCheck, exact: false }] : []),

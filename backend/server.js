@@ -1,3 +1,7 @@
+const path = require('path');
+
+// Freebuff stores workspace secrets in the root .env.local; keep backend/.env supported too.
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 require('dotenv').config();
 const app = require('./src/app');
 const { connectDB } = require('./src/config/db');

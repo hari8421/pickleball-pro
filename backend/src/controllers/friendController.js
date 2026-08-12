@@ -18,9 +18,10 @@ function normalizeFriendRequest(doc) {
  */
 async function getFriendRequests(req, res, next) {
   try {
-    const filter = req.query.uid
-      ? { $or: [{ senderUID: req.query.uid }, { receiverUID: req.query.uid }] }
-      : {};
+    const requestedUID = req.query.uid || req.auth?.username;
+    const filter = req.auth?.adminId
+      ? (requestedUID ? { $or: [{ senderUID: requestedUID }, { receiverUID: requestedUID }] } : {})
+      : { $or: [{ senderUID: req.auth?.username }, { receiverUID: req.auth?.username }] };
 
     const requests = await FriendRequest.find(filter).sort({ createdAt: -1 });
     res.json(requests.map(normalizeFriendRequest));
@@ -37,6 +38,11 @@ async function getFriendRequests(req, res, next) {
 async function createFriendRequest(req, res, next) {
   try {
     const { senderUID, receiverUID } = req.body;
+    if (!req.auth?.adminId && senderUID !== req.auth?.username) {
+      const error = new Error('You can only send friend requests for your own account');
+      error.status = 403;
+      return next(error);
+    }
 
     // Check for existing request in either direction
     const existing = await FriendRequest.findOne({
@@ -67,6 +73,18 @@ async function createFriendRequest(req, res, next) {
  */
 async function updateFriendRequest(req, res, next) {
   try {
+    const existing = await FriendRequest.findById(req.params.id);
+    if (!existing) {
+      const err = new Error('Friend request not found');
+      err.status = 404;
+      return next(err);
+    }
+    if (!req.auth?.adminId && existing.receiverUID !== req.auth?.username) {
+      const err = new Error('Only the receiving player can accept a friend request');
+      err.status = 403;
+      return next(err);
+    }
+
     const request = await FriendRequest.findByIdAndUpdate(
       req.params.id,
       { $set: { status: req.body.status } },
@@ -91,12 +109,19 @@ async function updateFriendRequest(req, res, next) {
  */
 async function deleteFriendRequest(req, res, next) {
   try {
-    const request = await FriendRequest.findByIdAndDelete(req.params.id);
+    const request = await FriendRequest.findById(req.params.id);
     if (!request) {
       const err = new Error('Friend request not found');
       err.status = 404;
       return next(err);
     }
+    const isParticipant = request.senderUID === req.auth?.username || request.receiverUID === req.auth?.username;
+    if (!req.auth?.adminId && !isParticipant) {
+      const err = new Error('You do not have permission to remove this friend request');
+      err.status = 403;
+      return next(err);
+    }
+    await request.deleteOne();
     res.status(204).send();
   } catch (err) {
     next(err);

@@ -1,17 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSessionStore } from '../store/sessionStore';
 import { verifyToken } from '../api/auth';
 import { getCurrentUser } from '../api/users';
 
 export function useAuth() {
   const { token, setIsAdmin, login, isAdmin } = useSessionStore();
+  const [isVerifying, setIsVerifying] = useState(Boolean(token));
 
   useEffect(() => {
     let mounted = true;
 
     async function verify() {
-      if (!token) return;
+      if (!token) {
+        setIsVerifying(false);
+        return;
+      }
 
+      setIsVerifying(true);
       // First try admin verify (admin tokens go to /api/auth/verify)
       try {
         const data = await verifyToken(token);
@@ -19,8 +24,9 @@ export function useAuth() {
         setIsAdmin(true);
         // Set session as admin (displayName set to Admin)
         login(token, true, '', 'Admin', data.username || 'admin');
+        setIsVerifying(false);
         return;
-      } catch (err) {
+      } catch {
         // Not an admin token or invalid. Try user verification via /api/users/me
       }
 
@@ -30,9 +36,11 @@ export function useAuth() {
         setIsAdmin(false);
         // login(token, isAdmin=false, currentUID=username, displayName, username)
         login(token, false, user.username, user.displayName, user.username);
-      } catch (err) {
+        setIsVerifying(false);
+      } catch {
         // Token invalid for both admin and user -> logout
         useSessionStore.getState().logout();
+        setIsVerifying(false);
       }
     }
 
@@ -43,6 +51,6 @@ export function useAuth() {
     };
   }, [token, setIsAdmin, login]);
 
-  return { isAuthenticated: !!token, token, isAdmin };
+  return { isAuthenticated: !!token, token, isAdmin, isVerifying };
 }
 

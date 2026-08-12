@@ -18,6 +18,17 @@ export interface User {
   createdAt: string;
 }
 
+export interface Team {
+  _id: string;
+  name: string;
+  description: string;
+  color: string;
+  ownerUID: string;
+  members: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface Score {
   homeTeam: number;
   awayTeam: number;
@@ -35,6 +46,9 @@ export interface Game {
   timestamp: string;
   score: Score;
   mediaURL?: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
+  createdBy?: string;
   createdAt: string;
 }
 
@@ -61,4 +75,6 @@ export interface AddGameFormFields {
   score: Score;
   location: GeoPoint | null;
   mediaURL?: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
 }

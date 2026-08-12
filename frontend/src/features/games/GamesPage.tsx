@@ -1,17 +1,18 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Activity, RefreshCw, PlusCircle } from 'lucide-react';
+import { Activity, RefreshCw, PlusCircle, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getGames } from '../../api/games';
+import { deleteGame, getGames } from '../../api/games';
 import { QUERY_KEYS } from '../../lib/queryKeys';
+import { useSessionStore } from '../../store/sessionStore';
 import { sortGamesByTimestamp } from '../../lib/gameUtils';
 import GameCard from '../../components/cards/GameCard';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 import type { Game } from '../../types';
 
-const SwipeableGameCard: React.FC<{ game: Game }> = ({ game }) => (
+const SwipeableGameCard: React.FC<{ game: Game; onDelete: () => void; deleting: boolean; canDelete: boolean }> = ({ game, onDelete, deleting, canDelete }) => (
   <motion.div
     variants={{
       hidden: { opacity: 0, y: 20 },
@@ -27,14 +28,34 @@ const SwipeableGameCard: React.FC<{ game: Game }> = ({ game }) => (
       Details
     </div>
     <GameCard game={game} />
+    {canDelete && (
+      <button
+        type="button"
+        onClick={onDelete}
+        disabled={deleting}
+        className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600 disabled:opacity-50"
+      >
+        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+        {deleting ? 'Deleting...' : 'Delete game'}
+      </button>
+    )}
   </motion.div>
 );
 
 const GamesPage: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { currentUID, isAdmin } = useSessionStore();
   const { data: games = [], isLoading, isError, refetch } = useQuery({
     queryKey: QUERY_KEYS.games,
     queryFn: getGames,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteGame,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.games });
+    },
   });
 
   const sorted = sortGamesByTimestamp(games);
@@ -83,7 +104,15 @@ const GamesPage: React.FC = () => {
           variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
         >
           {sorted.map((game) => (
-            <SwipeableGameCard key={game._id} game={game} />
+            <SwipeableGameCard
+              key={game._id}
+              game={game}
+              deleting={deleteMutation.isPending && deleteMutation.variables === game._id}
+              canDelete={isAdmin || game.createdBy === currentUID}
+              onDelete={() => {
+                if (window.confirm('Delete this game? This cannot be undone.')) deleteMutation.mutate(game._id);
+              }}
+            />
           ))}
         </motion.div>
       )}

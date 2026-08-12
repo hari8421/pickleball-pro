@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { createBrowserRouter, Outlet, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/layout/PageTransition';
 import NavBar from '../components/layout/NavBar';
@@ -20,6 +20,7 @@ const AdminPlayersPage = lazy(() => import('../features/admin/AdminPlayersPage')
 const LoginPage = lazy(() => import('../features/login/LoginPage'));
 const RegisterPage = lazy(() => import('../features/login/RegisterPage'));
 const UsersPage = lazy(() => import('../features/users/UsersPage'));
+const TeamsPage = lazy(() => import('../features/teams/TeamsPage'));
 
 const LoadingFallback = () => (
   <div className="p-6 space-y-4">
@@ -30,7 +31,11 @@ const LoadingFallback = () => (
 /** Redirects unauthenticated users to /login */
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSessionStore((s) => s.token);
-  if (!token) return <Navigate to="/login" replace />;
+  const location = useLocation();
+  if (!token) {
+    const returnTo = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to={`/login?returnTo=${encodeURIComponent(returnTo)}`} replace />;
+  }
   return <>{children}</>;
 };
 
@@ -134,6 +139,14 @@ export const router = createBrowserRouter([
         element: (
           <PageTransition>
             <UsersPage />
+          </PageTransition>
+        ),
+      },
+      {
+        path: 'teams',
+        element: (
+          <PageTransition>
+            <TeamsPage />
           </PageTransition>
         ),
       },

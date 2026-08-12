@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { verifyJWT } = require('../middleware/jwtAuth');
 
 const {
   getFriendRequests,
@@ -9,9 +10,9 @@ const {
 const { createFriendValidators, updateFriendValidators } = require('../validators/friendValidators');
 const validate = require('../middleware/validate');
 
-router.get('/', getFriendRequests);
-router.post('/', createFriendValidators, validate, createFriendRequest);
-router.patch('/:id', updateFriendValidators, validate, updateFriendRequest);
-router.delete('/:id', validate, deleteFriendRequest);
+router.get('/', verifyJWT, getFriendRequests);
+router.post('/', verifyJWT, createFriendValidators, validate, createFriendRequest);
+router.patch('/:id', verifyJWT, updateFriendValidators, validate, updateFriendRequest);
+router.delete('/:id', verifyJWT, validate, deleteFriendRequest);
 
 module.exports = router;

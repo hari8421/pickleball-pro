@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 const User = require('../models/User');
+const Player = require('../models/Player');
 const { verifyJWT } = require('../middleware/jwtAuth');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -10,19 +11,19 @@ const JWT_EXPIRY = '7d';
 
 // Validators
 const registerValidators = [
-  body('username').exists({ checkFalsy: true }).withMessage('username is required').isString().trim(),
+  body('username').exists({ checkFalsy: true }).withMessage('username is required').isString().trim().toLowerCase().matches(/^[a-zA-Z0-9._-]{3,32}$/).withMessage('username must be 3-32 characters using letters, numbers, dots, dashes, or underscores'),
   body('password').exists({ checkFalsy: true }).withMessage('password is required').isString().isLength({ min: 6 }).withMessage('password must be at least 6 characters'),
-  body('displayName').exists({ checkFalsy: true }).withMessage('displayName is required').isString().isLength({ min: 2 }).trim(),
+  body('displayName').exists({ checkFalsy: true }).withMessage('displayName is required').isString().trim().isLength({ min: 2 }).withMessage('displayName must be at least 2 characters'),
   body('playingLevel').optional().isIn(['beginner', 'intermediate', 'advanced']).withMessage('invalid playing level'),
 ];
 
 const loginValidators = [
-  body('username').exists({ checkFalsy: true }).withMessage('username is required').isString().trim(),
+  body('username').exists({ checkFalsy: true }).withMessage('username is required').isString().trim().toLowerCase(),
   body('password').exists({ checkFalsy: true }).withMessage('password is required').isString(),
 ];
 
 const updateMeValidators = [
-  body('displayName').optional().isString().isLength({ min: 2 }).withMessage('displayName must be at least 2 characters').trim(),
+  body('displayName').optional().isString().trim().isLength({ min: 2 }).withMessage('displayName must be at least 2 characters'),
   body('playingLevel').optional().isIn(['beginner', 'intermediate', 'advanced']).withMessage('invalid playing level'),
 ];
 
@@ -41,6 +42,16 @@ async function register(req, res, next) {
     const user = new User({ username, password, displayName, playingLevel });
     const saved = await user.save();
 
+    // Keep the ranking/player directory in sync with registered accounts.
+    await Player.findOneAndUpdate(
+      { uid: saved.username },
+      {
+        $set: { displayName: saved.displayName },
+        $setOnInsert: { uid: saved.username },
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
     res.status(201).json({
       id: saved._id,
       username: saved.username,
@@ -49,6 +60,10 @@ async function register(req, res, next) {
       createdAt: saved.createdAt,
     });
   } catch (err) {
+    if (err.code === 11000) {
+      err.status = 409;
+      err.message = 'Username already taken';
+    }
     next(err);
   }
 }
@@ -136,6 +151,14 @@ async function updateMe(req, res, next) {
       const err = new Error('User not found');
       err.status = 404;
       return next(err);
+    }
+
+    if (typeof displayName !== 'undefined') {
+      await Player.findOneAndUpdate(
+        { uid: user.username },
+        { $set: { displayName } },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
     }
 
     res.json(user);

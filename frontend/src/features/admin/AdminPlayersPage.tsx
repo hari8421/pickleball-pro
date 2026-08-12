@@ -10,7 +10,7 @@ import AdminPlayerForm from './AdminPlayerForm';
 
 const AdminPlayersPage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, isVerifying } = useAuth();
   const { isAdmin, logout, currentUID } = useSessionStore();
   const { addToast } = useToastStore();
   const [players, setPlayers] = useState<Player[]>([]);
@@ -96,13 +96,24 @@ const AdminPlayersPage: React.FC = () => {
     );
   }
 
-  if (!isAdmin && !token) {
+  if (isVerifying) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+        <div className="text-center">
+          <ShieldCheck className="w-16 h-16 mx-auto mb-4 text-slate-400" />
+          <h1 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-2">Verifying access...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
         <div className="text-center">
           <ShieldCheck className="w-16 h-16 mx-auto mb-4 text-slate-400" />
           <h1 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-2">Access Denied</h1>
-          <p className="text-slate-600 dark:text-slate-400">Only admin players can access this page</p>
+          <p className="text-slate-600 dark:text-slate-400">Only admin accounts can access this page</p>
         </div>
       </div>
     );

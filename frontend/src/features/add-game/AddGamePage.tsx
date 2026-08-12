@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MapPin, Loader2, PlusCircle, X, Navigation } from 'lucide-react';
 import { getPlayers } from '../../api/players';
+import { getTeams } from '../../api/teams';
 import { createGame } from '../../api/games';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { useGeolocation } from '../../hooks/useGeolocation';
@@ -21,6 +22,8 @@ const AddGamePage: React.FC = () => {
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
   const [mediaURL, setMediaURL] = useState('');
+  const [homeTeamId, setHomeTeamId] = useState('');
+  const [awayTeamId, setAwayTeamId] = useState('');
   const [manualLat, setManualLat] = useState('');
   const [manualLon, setManualLon] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -28,6 +31,10 @@ const AddGamePage: React.FC = () => {
   const { data: players = [], isLoading: loadingPlayers } = useQuery({
     queryKey: QUERY_KEYS.players,
     queryFn: getPlayers,
+  });
+  const { data: teams = [], isLoading: loadingTeams } = useQuery({
+    queryKey: QUERY_KEYS.teams,
+    queryFn: getTeams,
   });
 
   const mutation = useMutation({
@@ -70,6 +77,8 @@ const AddGamePage: React.FC = () => {
       },
       location: getLocation(),
       mediaURL: mediaURL || undefined,
+      homeTeamId: homeTeamId || undefined,
+      awayTeamId: awayTeamId || undefined,
     };
 
     const validationErrors = validateAddGameForm(fields);
@@ -85,6 +94,8 @@ const AddGamePage: React.FC = () => {
       location: fields.location!,
       timestamp: new Date().toISOString(),
       mediaURL: fields.mediaURL,
+      homeTeamId: fields.homeTeamId,
+      awayTeamId: fields.awayTeamId,
     });
   };
 
@@ -92,6 +103,11 @@ const AddGamePage: React.FC = () => {
     setSelectedPlayers((prev) =>
       prev.includes(uid) ? prev.filter((p) => p !== uid) : [...prev, uid]
     );
+  };
+
+  const handleTeamChange = (side: 'home' | 'away', teamId: string) => {
+    if (side === 'home') setHomeTeamId(teamId);
+    else setAwayTeamId(teamId);
   };
 
   return (
@@ -113,7 +129,7 @@ const AddGamePage: React.FC = () => {
           <legend className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
             Players <span className="text-red-400">*</span>
           </legend>
-          {loadingPlayers ? (
+          {loadingPlayers || loadingTeams ? (
             <SkeletonLoader variant="list-item" count={3} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
@@ -148,6 +164,25 @@ const AddGamePage: React.FC = () => {
             <p role="alert" className="mt-1 text-xs text-red-500">{errors.players}</p>
           )}
         </fieldset>
+
+        {/* Team association */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="home-team" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Home team <span className="font-normal text-slate-400">(optional)</span></label>
+            <select id="home-team" value={homeTeamId} onChange={(event) => handleTeamChange('home', event.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100">
+              <option value="">No team selected</option>
+              {teams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="away-team" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Away team <span className="font-normal text-slate-400">(optional)</span></label>
+            <select id="away-team" value={awayTeamId} onChange={(event) => handleTeamChange('away', event.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100">
+              <option value="">No team selected</option>
+              {teams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+            </select>
+          </div>
+        </div>
+        {errors.teams && <p role="alert" className="text-xs text-red-500">{errors.teams}</p>}
 
         {/* Score */}
         <div className="grid grid-cols-2 gap-4">

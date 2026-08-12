@@ -14,6 +14,17 @@ export async function getGames(): Promise<Game[]> {
   return data.data;
 }
 
+export async function deleteGame(id: string): Promise<void> {
+  const res = await fetch(`/api/games/${id}`, {
+    method: 'DELETE',
+    headers: { ...getAuthHeader() },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || `Failed to delete game: ${res.statusText}`);
+  }
+}
+
 export async function createGame(
   payload: Omit<Game, '_id' | 'createdAt'>
 ): Promise<Game> {

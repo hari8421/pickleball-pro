@@ -34,8 +34,8 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      role="status"
-      aria-live="polite"
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
       className={`flex items-center gap-3 px-4 py-3 rounded-xl bg-white dark:bg-slate-800 shadow-lg border ${bgMap[toast.type]} min-w-[240px] max-w-sm`}
     >
       {iconMap[toast.type]}

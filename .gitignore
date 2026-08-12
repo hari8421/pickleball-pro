@@ -12,6 +12,8 @@ frontend/build/
 
 # Environment files
 backend/.env
+.env.local
+backend/.env.local
 
 # Logs
 *.log

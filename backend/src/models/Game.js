@@ -43,6 +43,12 @@ const GameSchema = new mongoose.Schema(
       awayTeam: { type: Number, default: 0 },
     },
     mediaURL: { type: String },
+    homeTeamId: { type: String },
+    awayTeamId: { type: String },
+    homePlayerUIDs: { type: [String], default: undefined },
+    awayPlayerUIDs: { type: [String], default: undefined },
+    statsApplied: { type: Boolean, default: false },
+    createdBy: { type: String, index: true },
   },
   {
     timestamps: true, // adds createdAt + updatedAt automatically
