@@ -58,6 +58,50 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 to-brand-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/70 dark:border-slate-700/80 bg-slate-900 shadow-2xl mb-6">
+          <svg viewBox="0 0 640 280" className="block w-full" role="img" aria-label="A pickleball resting over a sunny green court">
+            <defs>
+              <linearGradient id="courtSky" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#0f766e" />
+                <stop offset="55%" stopColor="#166534" />
+                <stop offset="100%" stopColor="#052e16" />
+              </linearGradient>
+              <linearGradient id="courtSurface" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#4ade80" />
+                <stop offset="100%" stopColor="#15803d" />
+              </linearGradient>
+              <radialGradient id="ballGlow" cx="35%" cy="25%" r="75%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="55%" stopColor="#facc15" />
+                <stop offset="100%" stopColor="#ca8a04" />
+              </radialGradient>
+            </defs>
+            <rect width="640" height="280" fill="url(#courtSky)" />
+            <circle cx="540" cy="54" r="28" fill="#fef08a" opacity="0.9" />
+            <path d="M0 172 C150 135 260 156 388 132 C500 112 570 126 640 104 V280 H0Z" fill="url(#courtSurface)" />
+            <path d="M0 172 C150 135 260 156 388 132 C500 112 570 126 640 104" fill="none" stroke="#bbf7d0" strokeWidth="3" opacity="0.7" />
+            <path d="M42 252 L162 153 M598 252 L478 125 M118 280 L226 150 M522 280 L414 133" fill="none" stroke="#dcfce7" strokeWidth="3" opacity="0.8" />
+            <path d="M62 232 H578 M146 178 H494" fill="none" stroke="#dcfce7" strokeWidth="3" opacity="0.8" />
+            <path d="M320 130 V280" stroke="#ecfdf5" strokeWidth="5" opacity="0.9" />
+            <path d="M318 126 C318 118 322 114 328 114 H336 C342 114 346 118 346 126 V216" fill="none" stroke="#f8fafc" strokeWidth="3" opacity="0.75" />
+            <path d="M286 218 H354" stroke="#f8fafc" strokeWidth="4" opacity="0.8" />
+            <g transform="translate(415 112) rotate(18)">
+              <circle cx="0" cy="0" r="48" fill="#713f12" opacity="0.25" transform="translate(7 10)" />
+              <circle cx="0" cy="0" r="48" fill="url(#ballGlow)" stroke="#fef3c7" strokeWidth="4" />
+              <circle cx="-17" cy="-16" r="5" fill="#a16207" opacity="0.85" />
+              <circle cx="12" cy="-22" r="5" fill="#a16207" opacity="0.85" />
+              <circle cx="25" cy="4" r="5" fill="#a16207" opacity="0.85" />
+              <circle cx="-7" cy="17" r="5" fill="#a16207" opacity="0.85" />
+              <circle cx="-27" cy="10" r="5" fill="#a16207" opacity="0.85" />
+            </g>
+            <path d="M420 72 C448 50 472 46 500 52" fill="none" stroke="#ecfccb" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+          </svg>
+          <div className="absolute left-5 bottom-4 flex items-center gap-2 text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm text-lg">●</span>
+            <span className="text-sm font-semibold tracking-wide">Pickleball Pro <span className="text-brand-200 font-normal">· Find your rally</span></span>
+          </div>
+        </div>
+
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 mb-4">
             {isAdminMode ? <ShieldCheck className="w-8 h-8 text-white" aria-hidden="true" /> : <LogIn className="w-8 h-8 text-white" aria-hidden="true" />}
